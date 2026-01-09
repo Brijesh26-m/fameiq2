@@ -447,112 +447,6 @@ function updateRotation(progress) {
   }, { passive: true });
 })();
 
-
-
-
-
-
-
-/* =========================================
-   FLUID CURSOR TAIL (DIV — IDLE AWARE)
-========================================= */
-
-(() => {
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-
-  if (prefersReducedMotion) return;
-
-  const MAX_DOTS = window.innerWidth < 768 ? 14 : 22;
-  const dots = [];
-  const positions = [];
-
-  const layer = document.createElement("div");
-  layer.className = "cursor-fluid-layer is-idle";
-  document.body.appendChild(layer);
-
-  for (let i = 0; i < MAX_DOTS; i++) {
-    const dot = document.createElement("div");
-    dot.className = "cursor-fluid-dot";
-    layer.appendChild(dot);
-
-    dots.push(dot);
-    positions.push({ x: 0, y: 0 });
-  }
-
-  let tx = window.innerWidth / 2;
-  let ty = window.innerHeight / 2;
-
-  let lastMove = performance.now();
-  const IDLE_DELAY = 900;
-
-  function activate() {
-    layer.classList.remove("is-idle");
-    lastMove = performance.now();
-  }
-
-  /* Pointer tracking */
-  function setTarget(x, y) {
-    tx = x;
-    ty = y;
-    activate();
-  }
-
-  window.addEventListener("mousemove", e => {
-    setTarget(e.clientX, e.clientY);
-  }, { passive: true });
-
-  window.addEventListener("touchmove", e => {
-    if (!e.touches[0]) return;
-    setTarget(e.touches[0].clientX, e.touches[0].clientY);
-  }, { passive: true });
-
-  function animate() {
-    const now = performance.now();
-
-    // Idle detection
-    if (now - lastMove > IDLE_DELAY) {
-      layer.classList.add("is-idle");
-    }
-
-    // Offset target slightly backwards (behind cursor)
-const OFFSET = 12; // px – tune between 8–18 if needed
-
-const dx = positions[0].x - tx;
-const dy = positions[0].y - ty;
-const dist = Math.hypot(dx, dy) || 1;
-
-const ox = tx + (dx / dist) * OFFSET;
-const oy = ty + (dy / dist) * OFFSET;
-
-positions[0].x += (ox - positions[0].x) * 0.90;
-positions[0].y += (oy - positions[0].y) * 0.90;
-
-
-    for (let i = 1; i < positions.length; i++) {
-      positions[i].x += (positions[i - 1].x - positions[i].x) * 0.25;
-      positions[i].y += (positions[i - 1].y - positions[i].y) * 0.25;
-    }
-
-    dots.forEach((dot, i) => {
-      const p = positions[i];
-      const life = 1 - i / dots.length;
-
-      dot.style.opacity = life * 0.85;
-      dot.style.transform = `
-        translate3d(${p.x}px, ${p.y}px, 0)
-        scale(${0.6 + life * 0.6})
-      `;
-    });
-
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-})();
-
-
 /* =========================================
    PREMIUM FLUID CURSOR TAIL (DIV ONLY)
 ========================================= */
@@ -1296,4 +1190,5 @@ vantaEffect = VANTA.BIRDS({
   });
 
 })();
+
 
