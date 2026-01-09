@@ -1077,40 +1077,38 @@ function isTooClose(x, y, r, existing) {
 
     const w = window.innerWidth;
 
-   const isMobile = w < 768;
-   const isTablet = w >= 768 && w < 1024;
+    const isMobile = w < 768;
+    const isTablet = w >= 768 && w < 1024;
+    const isLaptop = w >= 1024;
 
-vantaEffect = VANTA.BIRDS({
-  el,
+    vantaEffect = VANTA.BIRDS({
+      el,
 
-  mouseControls: true,
-  touchControls: true,
-  gyroControls: false,
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
 
-  backgroundAlpha: 0.0,
+      backgroundAlpha: 0.0,
 
-  scale: 1.0,
-  scaleMobile: 0.75,
+      scale: 1.0,
+      scaleMobile: 0.75,
 
-  color1: 0xD8B06A, // GOLD → near birds (foreground)
-  color2: 0xE3E1DE, // SILVER → far birds (background)
+      color1: 0xD8B06A, // GOLD → near birds
+      color2: 0xE3E1DE, // SILVER → far birds
 
+      /* Bird quantity (unchanged) */
+      quantity: isMobile ? 4.5 : isTablet ? 5 : 4.5,
 
-  /* Bird count stays optimized */
-  quantity: isMobile ? 4.5 : isTablet ? 5 : 6,
+      birdSize: 1.05,
+      wingSpan: 18.0,
 
-  birdSize: 1.05,
-  wingSpan: 18.0,
+      separation: isMobile ? 72.0 : 56.0,
+      alignment: isMobile ? 22.0 : 28.0,
+      cohesion: isMobile ? 16.0 : 22.0,
 
-  separation: isMobile ? 72.0 : 56.0,
-  alignment: isMobile ? 22.0 : 28.0,
-  cohesion: isMobile ? 16.0 : 22.0,
-
-  /* ✅ SPEED REDUCED FOR MOBILE + TABLET */
-  speedLimit: isMobile ? 2.8 : isTablet ? 3.4 : 4.2
-});
-
-
+      /* 🔽 FIX: MUCH SLOWER SPEED FOR MOBILE & TABLET */
+      speedLimit: isMobile ? 1.9 : isTablet ? 2.4 : 3.2
+    });
   }
 
   /* ===============================
@@ -1123,7 +1121,9 @@ vantaEffect = VANTA.BIRDS({
     vantaEffect.setOptions({
       separation: 120.0,
       cohesion: 7.0,
-      speedLimit: 5.2
+
+      /* 🔽 FIX: SPREAD SPEED ALSO REDUCED */
+      speedLimit: 3.0
     });
 
     clearTimeout(spreadTimeout);
@@ -1132,14 +1132,12 @@ vantaEffect = VANTA.BIRDS({
       vantaEffect.setOptions({
         separation: 56.0,
         cohesion: 22.0,
-        speedLimit: 4.2
+
+        /* 🔽 FIX: RESET MATCHES NEW BASE SPEED */
+        speedLimit: 2.4
       });
     }, 900);
   }
-
-  /* ===============================
-     TOUCH ONLY
-  =============================== */
 
   const isTouch =
     "ontouchstart" in window ||
@@ -1155,10 +1153,6 @@ vantaEffect = VANTA.BIRDS({
     );
   }
 
-  /* ===============================
-     INIT + CLEANUP
-  =============================== */
-
   initBirds();
 
   window.addEventListener("resize", () => {
@@ -1172,9 +1166,7 @@ vantaEffect = VANTA.BIRDS({
 })();
 
 
-
-
-
+  
   /* ===============================
      INIT
   =============================== */
@@ -1190,5 +1182,6 @@ vantaEffect = VANTA.BIRDS({
   });
 
 })();
+
 
 
