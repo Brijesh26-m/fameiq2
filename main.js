@@ -650,6 +650,141 @@ positions[0].y += (oy - positions[0].y) * 0.90;
   }, { passive: true });
 })();
 
+
+/* =========================================
+   FAMEIQ — PREMIUM CURSOR + FLUID TAIL
+   Mobile & Tablet Optimized (NO LAG)
+========================================= */
+
+(() => {
+  const blob = document.querySelector(".cursor-blob");
+  if (!blob) return;
+
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+  /* ===============================
+     TAIL CONFIG (DEVICE AWARE)
+  =============================== */
+
+  const TAIL_COUNT = isMobile ? 6 : isTablet ? 7 : 8;
+
+  const FOLLOW_SPEED = isMobile
+    ? 0.35
+    : isTablet
+    ? 0.28
+    : 0.18;
+
+  const IDLE_DELAY = 900;
+
+  /* ===============================
+     CREATE TAIL ELEMENTS
+  =============================== */
+
+  const tails = [];
+  for (let i = 0; i < TAIL_COUNT; i++) {
+    const t = document.createElement("div");
+    t.className = "cursor-tail is-idle";
+    document.body.appendChild(t);
+    tails.push({
+      el: t,
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    });
+  }
+
+  /* ===============================
+     POSITION TRACKING
+  =============================== */
+
+  let tx = window.innerWidth / 2;
+  let ty = window.innerHeight / 2;
+  let idleTimer;
+
+  function activate() {
+    blob.classList.add("is-active");
+    blob.classList.remove("is-idle");
+
+    tails.forEach(t => {
+      t.el.classList.add("is-active");
+      t.el.classList.remove("is-idle");
+    });
+
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      blob.classList.add("is-idle");
+      tails.forEach(t => t.el.classList.add("is-idle"));
+    }, IDLE_DELAY);
+  }
+
+  /* ===============================
+     MAIN ANIMATION LOOP
+  =============================== */
+
+  function animate() {
+    let prevX = tx;
+    let prevY = ty;
+
+    tails.forEach((t, i) => {
+      const delay = (i + 1) * 0.55;
+
+      t.x += (prevX - t.x) * FOLLOW_SPEED;
+      t.y += (prevY - t.y) * FOLLOW_SPEED;
+
+      t.el.style.left = t.x + "px";
+      t.el.style.top = t.y + "px";
+      t.el.style.transform =
+        `translate(-50%, -50%) scale(${0.7 - i * 0.05})`;
+
+      prevX = t.x;
+      prevY = t.y;
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  /* ===============================
+     INPUT EVENTS
+  =============================== */
+
+  window.addEventListener(
+    "mousemove",
+    e => {
+      tx = e.clientX;
+      ty = e.clientY;
+      activate();
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "touchstart",
+    e => {
+      const t = e.touches[0];
+      tx = t.clientX;
+      ty = t.clientY;
+      activate();
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "touchmove",
+    e => {
+      const t = e.touches[0];
+      tx = t.clientX;
+      ty = t.clientY;
+      activate();
+    },
+    { passive: true }
+  );
+
+})();
+
+
+  
 /* =========================================
    DIRECTIONAL 3D BACKGROUND OBJECT FIELD
    (FINAL – ALL DEVICES)
@@ -1161,3 +1296,4 @@ vantaEffect = VANTA.BIRDS({
   });
 
 })();
+
